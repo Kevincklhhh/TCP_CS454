@@ -4,14 +4,16 @@ import java.util.Timer;
 
 class StudentSocketImpl extends BaseSocketImpl {
 
-  // SocketImpl data members:
-  //   protected InetAddress address;
-  //   protected int port;
-  //   protected int localport;
+//   SocketImpl data members:
+//     protected InetAddress address;
+//     protected int port;
+//     protected int localport;
 
   private Demultiplexer D;
   private Timer tcpTimer;
-
+  private enum States{
+    Closed
+  }
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
@@ -27,6 +29,8 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
     localport = D.getNextAvailablePort();
+
+    TCPPacket packet = new TCPPacket(localport,port, )
   }
   
   /**
