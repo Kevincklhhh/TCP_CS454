@@ -6,7 +6,7 @@ public class client1 {
     if(argv.length!= 2){
       System.err.println("usage: client1 <hostname> <hostport>");
       System.exit(1);
-    }
+    }//
 
     try{
       TCPStart.start();
