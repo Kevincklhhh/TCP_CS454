@@ -5,7 +5,7 @@ import java.util.Timer;
 class StudentSocketImpl extends BaseSocketImpl {
 
 //   SocketImpl data members:
-//     protected InetAddress address;
+     protected InetAddress address;
 //     protected int port;
 //     protected int localport;
 
@@ -13,7 +13,17 @@ class StudentSocketImpl extends BaseSocketImpl {
   private Timer tcpTimer;
   private enum States{
     Closed,
-    Syn_sent
+    Syn_sent,
+    LISTEN,
+    SYN_RCVD,
+    ESTABLISHED,
+    SYN_SENT,
+    FIN_WAIT_1,
+    FIN_WAIT_2,
+    CLOSING,
+    TIME_WAIT,
+    CLOSE_WAIT,
+    LAST_ACK
   }
   private States state;
 
@@ -46,6 +56,14 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @param p The packet that arrived
    */
   public synchronized void receivePacket(TCPPacket p){
+    String output = p.toString();
+    System.out.println(output);
+    switch (state){
+      case LISTEN:
+        if(!p.ackFlag && p.synFlag){
+          TCPWrapper.send(p, address);
+        }
+    }
   }
   
   /** 
@@ -56,7 +74,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * Note that localport is already set prior to this being called.
    */
   public synchronized void acceptConnection() throws IOException {
-    SetState(States.Syn_sent);
+    SetState(States.LISTEN);
     D.registerListeningSocket(localport,this);
   }
 

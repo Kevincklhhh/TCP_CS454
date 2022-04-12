@@ -182,7 +182,7 @@ class TCPWrapper {
     // receiving the datagram.
     static public TCPPacket unwrap(DatagramPacket d) {
         byte b[] = new byte[d.getLength()];
-	System.arraycopy(d.getData(),0,b,0,d.getLength());
+	    System.arraycopy(d.getData(),0,b,0,d.getLength());
         return( new TCPPacket(b, d.getAddress()) );
     }
     
