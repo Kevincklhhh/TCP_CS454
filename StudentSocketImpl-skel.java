@@ -12,9 +12,15 @@ class StudentSocketImpl extends BaseSocketImpl {
   private Demultiplexer D;
   private Timer tcpTimer;
   private enum States{
-    Closed
+    Closed,
+    Syn_sent
   }
+  private States state;
 
+  private void SetState(States state){
+    this.state = state;
+    System.out.println("Switching to state" + state);
+  }
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
   }
@@ -29,8 +35,10 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
     localport = D.getNextAvailablePort();
-
-    TCPPacket packet = new TCPPacket(localport,port, )
+    D.registerConnection(address,localport,port,this);
+    TCPPacket packet = new TCPPacket(localport,port,1,0,true,true,false,1,null);
+    TCPWrapper.send(packet,address);
+    SetState(States.Syn_sent);
   }
   
   /**
@@ -48,6 +56,8 @@ class StudentSocketImpl extends BaseSocketImpl {
    * Note that localport is already set prior to this being called.
    */
   public synchronized void acceptConnection() throws IOException {
+    SetState(States.Syn_sent);
+    D.registerListeningSocket(localport,this);
   }
 
   
