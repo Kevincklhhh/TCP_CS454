@@ -10,8 +10,8 @@ public class client1 {
 
     try{
       TCPStart.start();
-      
-      Socket sock = new Socket(argv[0], Integer.parseInt(argv[1]));
+      //argv[0], Integer.parseInt(argv[1])
+      Socket sock = new Socket("hahaha", 12345);
 
       System.out.println("got socket "+sock);
       
