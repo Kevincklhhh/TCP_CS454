@@ -11,9 +11,10 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   private Demultiplexer D;
   private Timer tcpTimer;
+
+
   private enum States{
-    Closed,
-    Syn_sent,
+    CLOSED,
     LISTEN,
     SYN_RCVD,
     ESTABLISHED,
@@ -31,6 +32,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     this.state = state;
     System.out.println("Switching to state" + state);
   }
+
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
   }
@@ -48,7 +50,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     D.registerConnection(address,localport,port,this);
     TCPPacket packet = new TCPPacket(localport,port,1,0,true,true,false,1,null);
     TCPWrapper.send(packet,address);
-    SetState(States.Syn_sent);
+    SetState(States.ESTABLISHED);
   }
   
   /**
@@ -58,10 +60,20 @@ class StudentSocketImpl extends BaseSocketImpl {
   public synchronized void receivePacket(TCPPacket p){
     String output = p.toString();
     System.out.println(output);
+
+    this.notifyAll();
+
     switch (state){
       case LISTEN:
         if(!p.ackFlag && p.synFlag){
           TCPWrapper.send(p, address);
+        }
+
+        try {
+          D.unregisterListeningSocket(localport, this);
+          D.registerConnection(localSourcAddr, localport, p.sourcePort, this);
+        } catch (IOException e) {
+          e.printStackTrace();
         }
     }
   }
