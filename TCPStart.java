@@ -25,11 +25,11 @@ class TCPStart {
   static public void start() {
 
     // check command line args
-    if (System.getProperty(PORTRESOURCE)==null) {
-      System.err.println("Must set "+PORTRESOURCE+" for UDP port to use with "+
-			 "-D"+PORTRESOURCE+"=<num>");
-      System.exit(1);
-    }        
+//    if (System.getProperty(PORTRESOURCE)==null) {
+//      System.err.println("Must set "+PORTRESOURCE+" for UDP port to use with "+
+//			 "-D"+PORTRESOURCE+"=<num>");
+//      System.exit(1);
+//    }
 
         
     // this number will initialize what port # you want your UDP
