@@ -8,7 +8,11 @@ class StudentSocketImpl extends BaseSocketImpl {
      protected InetAddress address;
 //     protected int port;
 //     protected int localport;
-
+  private int localAckNum; // Local copy of ackNum
+  private int localSeqNumber;  // Local copy of SeqNum
+  private int localSourcePort; // Local copy of SourcePort
+  private int localSeqNumberStep;
+  private InetAddress localSourcAddr;
   private Demultiplexer D;
   private Timer tcpTimer;
 
@@ -65,8 +69,15 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     switch (state){
       case LISTEN:
+        System.out.print("haha");
         if(!p.ackFlag && p.synFlag){
-          TCPWrapper.send(p, address);
+          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
+          localSeqNumberStep = localSeqNumber + 1;
+          localSourcAddr = p.sourceAddr;
+          localAckNum = p.ackNum;
+          TCPPacket SynAck = new TCPPacket(localport, p.sourcePort, p.seqNum+1, localAckNum, true, true, false, 1, null);
+          TCPWrapper.send(SynAck, localSourcAddr);
+          SetState(States.SYN_RCVD);
         }
 
         try {
