@@ -39,6 +39,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   private void SendPacket(InetAddress address, int source, int dest, int seqNum, int localAN, boolean ack, boolean syn, boolean fin){
     TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
     TCPWrapper.send(SynAck, address);
+
   }
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
