@@ -218,6 +218,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when closing this socket.
    */
   public synchronized void close() throws IOException {
+    System.out.println("closing");
     SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, true);
     if (this.state == state.ESTABLISHED) {
       SetState(state.FIN_WAIT_1);
