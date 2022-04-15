@@ -36,18 +36,14 @@ class StudentSocketImpl extends BaseSocketImpl {
     System.out.println("!!!" + this.state + "->" + state);
     this.state = state;
   }
-  private void SendPacket(InetAddress address, int source, int dest, int seqNum, int localAN, boolean ack, boolean syn, boolean fin){
-    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
-    TCPWrapper.send(SynAck, address);
+  private void SendPacket(){
+    TCPPacket SynAck = new TCPPacket(localport, p.sourcePort, p.seqNum+1, localAckNum, true, true, false, 1, null);
+    TCPWrapper.send(SynAck, localSourcAddr);
 
   }
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
     this.D = D;
-  }
-
-  private void wrapAndSend(){
-
   }
 
   /**
@@ -103,14 +99,6 @@ class StudentSocketImpl extends BaseSocketImpl {
           e.printStackTrace();
         }
       case SYN_RCVD:
-        if(p.ackFlag && !p.synFlag){
-          SetState(States.ESTABLISHED);
-        }
-      case SYN_SENT:
-        if(p.ackFlag && p.synFlag){//send an ACK packet
-          SendPacket(address,localport,p.sourcePort,-2,localSeqNumber+1,true,false,false);
-          SetState(States.ESTABLISHED);
-        }
 
     }
   }
