@@ -78,9 +78,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   public synchronized void receivePacket(TCPPacket p){
     String output = p.toString();
     System.out.println(output);
-
     this.notifyAll();
-
     switch (state){
       case LISTEN:
         System.out.print("haha");
@@ -158,6 +156,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           SetState(States.TIME_WAIT);
         }
     }
+
   }
   
   /** 
