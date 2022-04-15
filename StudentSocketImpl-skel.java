@@ -37,6 +37,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     this.state = state;
   }
   private void SendPacket(InetAddress address, int source, int dest, int seqNum, int localAN, boolean ack, boolean syn, boolean fin){
+
     TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
     TCPWrapper.send(SynAck, address);
   }
@@ -45,9 +46,6 @@ class StudentSocketImpl extends BaseSocketImpl {
     this.D = D;
   }
 
-  private void wrapAndSend(){
-
-  }
 
   /**
    * Connects this socket to the specified port number on the specified host.
@@ -91,8 +89,10 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
-          TCPPacket SynAck = new TCPPacket(localport, p.sourcePort, p.seqNum+1, localAckNum, true, true, false, 1, null);
-          TCPWrapper.send(SynAck, localSourcAddr);
+          localSourcePort = p.sourcePort;
+          SendPacket(localSourcAddr,localport, localSourcePort, p.seqNum+1, localAckNum, true, true, false) ;
+//          TCPPacket SynAck = new TCPPacket(localport, localSourcePort, p.seqNum+1, localAckNum, true, true, false, 1, null);
+//          TCPWrapper.send(SynAck, localSourcAddr);
           SetState(States.SYN_RCVD);
         }
         try {
@@ -107,10 +107,56 @@ class StudentSocketImpl extends BaseSocketImpl {
         }
       case SYN_SENT:
         if(p.ackFlag && p.synFlag){//send an ACK packet
-          SendPacket(address,localport,p.sourcePort,-2,localSeqNumber+1,true,false,false);
+          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
+          localSeqNumberStep = localSeqNumber + 1;
+          localSourcAddr = p.sourceAddr;
+          localAckNum = p.ackNum;
+          localSourcePort = p.sourcePort;
+          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
           SetState(States.ESTABLISHED);
         }
+      case FIN_WAIT_1:
+        if (p.ackFlag){
+          SetState(States.FIN_WAIT_2);
+        }
+        else if(p.finFlag){
+          SetState(States.CLOSING);
+          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
+          localSeqNumberStep = localSeqNumber + 1;
+          localSourcAddr = p.sourceAddr;
+          localAckNum = p.ackNum;
+          localSourcePort = p.sourcePort;
+          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+        }
+      case FIN_WAIT_2:
+        if (p.finFlag){
+          SetState(States.TIME_WAIT);
+          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
+          localSeqNumberStep = localSeqNumber + 1;
+          localSourcAddr = p.sourceAddr;
+          localAckNum = p.ackNum;
+          localSourcePort = p.sourcePort;
+          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+        }
 
+      case CLOSING:
+        if (p.ackFlag){
+//          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
+//          localSeqNumberStep = localSeqNumber + 1;
+//          localSourcAddr = p.sourceAddr;
+//          localAckNum = p.ackNum;
+//          localSourcePort = p.sourcePort;
+//          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,false,false,false);
+          SetState(States.TIME_WAIT);
+        }
+
+      case TIME_WAIT:
+        SetState(States.CLOSED);
+
+      case LAST_ACK:
+        if (p.ackFlag){
+          SetState(States.TIME_WAIT);
+        }
     }
   }
   
@@ -173,6 +219,12 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when closing this socket.
    */
   public synchronized void close() throws IOException {
+    SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, true);
+    if (this.state == state.ESTABLISHED) {
+      SetState(state.FIN_WAIT_1);
+    } else if (this.state == state.CLOSE_WAIT) {
+      SetState(state.LAST_ACK);
+    }
   }
 
   /** 

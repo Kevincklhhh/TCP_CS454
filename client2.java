@@ -11,7 +11,7 @@ public class client2 {
     try{
       TCPStart.start();
       
-      Socket sock = new Socket(argv[0], Integer.parseInt(argv[1]));
+      Socket sock = new Socket("192.168.0.31", 12345);
 
       System.out.println("got socket "+sock);
       
