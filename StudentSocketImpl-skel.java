@@ -99,10 +99,12 @@ class StudentSocketImpl extends BaseSocketImpl {
         } catch (IOException e) {
           e.printStackTrace();
         }
+
       case SYN_RCVD:
         if(p.ackFlag && !p.synFlag){
           SetState(States.ESTABLISHED);
         }
+
       case SYN_SENT:
         if(p.ackFlag && p.synFlag){//send an ACK packet
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
@@ -113,6 +115,18 @@ class StudentSocketImpl extends BaseSocketImpl {
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
           SetState(States.ESTABLISHED);
         }
+
+      case ESTABLISHED:
+        if(p.finFlag){
+          SetState(States.CLOSE_WAIT);
+          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
+          localSeqNumberStep = localSeqNumber + 1;
+          localSourcAddr = p.sourceAddr;
+          localAckNum = p.ackNum;
+          localSourcePort = p.sourcePort;
+          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+        }
+
       case FIN_WAIT_1:
         if (p.ackFlag){
           SetState(States.FIN_WAIT_2);
@@ -126,6 +140,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
+
       case FIN_WAIT_2:
         if (p.finFlag){
           SetState(States.TIME_WAIT);
