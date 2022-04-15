@@ -79,6 +79,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     String output = p.toString();
     System.out.println(output);
     this.notifyAll();
+
     switch (state){
       case LISTEN:
         System.out.print("haha");
@@ -100,11 +101,13 @@ class StudentSocketImpl extends BaseSocketImpl {
           e.printStackTrace();
         }
         break;
+
       case SYN_RCVD:
         if(p.ackFlag && !p.synFlag){
           SetState(States.ESTABLISHED);
         }
         break;
+
       case SYN_SENT:
         if(p.ackFlag && p.synFlag){//send an ACK packet
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
@@ -116,6 +119,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           SetState(States.ESTABLISHED);
         }
         break;
+
       case ESTABLISHED:
         if(p.finFlag){
           SetState(States.CLOSE_WAIT);
@@ -127,6 +131,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
         break;
+
       case FIN_WAIT_1:
         if (p.ackFlag){
           SetState(States.FIN_WAIT_2);
@@ -141,6 +146,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
         break;
+
       case FIN_WAIT_2:
         if (p.finFlag){
           SetState(States.TIME_WAIT);
@@ -152,6 +158,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
         break;
+
       case CLOSING:
         if (p.ackFlag){
 //          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
@@ -163,9 +170,11 @@ class StudentSocketImpl extends BaseSocketImpl {
           SetState(States.TIME_WAIT);
         }
         break;
+
       case TIME_WAIT:
         SetState(States.CLOSED);
         break;
+
       case LAST_ACK:
         if (p.ackFlag){
           SetState(States.TIME_WAIT);
