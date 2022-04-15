@@ -56,9 +56,10 @@ class StudentSocketImpl extends BaseSocketImpl {
    *               connection.
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
+    System.out.println("trying to connect");
     localport = D.getNextAvailablePort();
     D.registerConnection(address,localport,port,this);
-    TCPPacket packet = new TCPPacket(localport,port,1,0,false,true,false,1,null);
+    TCPPacket packet = new TCPPacket(localport,port,9999,0,false,true,false,1,null);
     TCPWrapper.send(packet,address);
     SetState(States.SYN_SENT);
     while (this.state != state.ESTABLISHED){
@@ -99,12 +100,12 @@ class StudentSocketImpl extends BaseSocketImpl {
         } catch (IOException e) {
           e.printStackTrace();
         }
-
+        break;
       case SYN_RCVD:
         if(p.ackFlag && !p.synFlag){
           SetState(States.ESTABLISHED);
         }
-
+        break;
       case SYN_SENT:
         if(p.ackFlag && p.synFlag){//send an ACK packet
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
@@ -112,12 +113,15 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
+          System.out.println("sending a ackbao from state syn_sent");
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
           SetState(States.ESTABLISHED);
         }
-
+        break;
       case ESTABLISHED:
+        System.out.println("established,where to jump?");
         if(p.finFlag){
+
           SetState(States.CLOSE_WAIT);
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
@@ -126,7 +130,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
-
+        break;
       case FIN_WAIT_1:
         if (p.ackFlag){
           SetState(States.FIN_WAIT_2);
@@ -140,7 +144,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
-
+        break;
       case FIN_WAIT_2:
         if (p.finFlag){
           SetState(States.TIME_WAIT);
@@ -151,7 +155,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
-
+        break;
       case CLOSING:
         if (p.ackFlag){
 //          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
@@ -162,14 +166,15 @@ class StudentSocketImpl extends BaseSocketImpl {
 //          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,false,false,false);
           SetState(States.TIME_WAIT);
         }
-
+        break;
       case TIME_WAIT:
         SetState(States.CLOSED);
-
+        break;
       case LAST_ACK:
         if (p.ackFlag){
           SetState(States.TIME_WAIT);
         }
+        break;
     }
 
   }
