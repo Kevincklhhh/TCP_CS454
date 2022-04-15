@@ -243,11 +243,51 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void close() throws IOException {
     System.out.println("closing");
-    SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, true);
-    if (this.state == state.ESTABLISHED) {
+    if (this.state == null){
+    }
+    else if (this.state == state.ESTABLISHED) {
+      SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, true);
       SetState(state.FIN_WAIT_1);
     } else if (this.state == state.CLOSE_WAIT) {
+      SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, true);
       SetState(state.LAST_ACK);
+    }
+    try{
+      //create a new thread that waits until connection closes
+      backgroundThread newThread = new backgroundThread(this);
+      newThread.run();
+    }
+    catch (Exception e){
+      e.printStackTrace();
+    }
+
+  }
+
+  public States returnState(boolean currState){
+    if(currState){
+      return this.state;
+    }
+    else{
+      return States.CLOSED;
+    }
+  }
+
+  class backgroundThread implements Runnable{
+
+    public StudentSocketImpl waitToClose;
+    public backgroundThread(StudentSocketImpl here) {
+      this.waitToClose = here;
+    }
+
+    public void run(){
+      while (waitToClose.returnState(true) != waitToClose.returnState(false)){
+        try {
+          waitToClose.wait();
+        }
+        catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
     }
   }
 
