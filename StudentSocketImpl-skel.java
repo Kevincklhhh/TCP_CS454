@@ -62,7 +62,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     TCPPacket packet = new TCPPacket(localport,port,9999,0,false,true,false,1,null);
     TCPWrapper.send(packet,address);
     SetState(States.SYN_SENT);
-    while (this.state != state.ESTABLISHED){
+    while (this.state != state.ESTABLISHED){//
       try{
         wait();
       }
