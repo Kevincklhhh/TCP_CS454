@@ -272,24 +272,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     }
   }
 
-  class backgroundThread implements Runnable{
 
-    public StudentSocketImpl waitToClose;
-    public backgroundThread(StudentSocketImpl here) {
-      this.waitToClose = here;
-    }
-
-    public void run(){
-      while (waitToClose.returnState(true) != waitToClose.returnState(false)){
-        try {
-          waitToClose.wait();
-        }
-        catch (Exception e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
 
   /** 
    * create TCPTimerTask instance, handling tcpTimer creation
@@ -313,5 +296,24 @@ class StudentSocketImpl extends BaseSocketImpl {
     // this must run only once the last timer (30 second timer) has expired
     tcpTimer.cancel();
     tcpTimer = null;
+  }
+}
+
+class backgroundThread implements Runnable{
+
+  public StudentSocketImpl waitToClose;
+  public backgroundThread(StudentSocketImpl here) {
+    this.waitToClose = here;
+  }
+
+  public void run(){
+    while (waitToClose.returnState(true) != waitToClose.returnState(false)){
+      try {
+        waitToClose.wait();
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
   }
 }
