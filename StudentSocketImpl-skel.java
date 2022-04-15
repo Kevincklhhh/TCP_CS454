@@ -118,7 +118,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case ESTABLISHED:
         if(p.finFlag){
-          SetState(States.CLOSE_WAIT);
+          SetState(States.FIN_WAIT_1);
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
