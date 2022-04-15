@@ -33,8 +33,12 @@ class StudentSocketImpl extends BaseSocketImpl {
   private States state;
 
   private void SetState(States state){
+    System.out.println("!!!" + this.state + "->" + state);
     this.state = state;
-    System.out.println("Switching to state" + state);
+  }
+  private void SendPacket(){
+//    TCPPacket SynAck = new TCPPacket(localport, p.sourcePort, p.seqNum+1, localAckNum, true, true, false, 1, null);
+//    TCPWrapper.send(SynAck, localSourcAddr);
   }
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
@@ -55,6 +59,14 @@ class StudentSocketImpl extends BaseSocketImpl {
     TCPPacket packet = new TCPPacket(localport,port,1,0,false,true,false,1,null);
     TCPWrapper.send(packet,address);
     SetState(States.SYN_SENT);
+    while (this.state != state.ESTABLISHED){
+      try{
+        wait();
+      }
+      catch(Exception e){
+        e.printStackTrace();
+      }
+    }
   }
   
   /**
@@ -79,13 +91,14 @@ class StudentSocketImpl extends BaseSocketImpl {
           TCPWrapper.send(SynAck, localSourcAddr);
           SetState(States.SYN_RCVD);
         }
-
         try {
           D.unregisterListeningSocket(localport, this);
           D.registerConnection(localSourcAddr, localport, p.sourcePort, this);
         } catch (IOException e) {
           e.printStackTrace();
         }
+      case SYN_RCVD:
+
     }
   }
   
@@ -99,6 +112,14 @@ class StudentSocketImpl extends BaseSocketImpl {
   public synchronized void acceptConnection() throws IOException {
     SetState(States.LISTEN);
     D.registerListeningSocket(localport,this);
+    while (this.state != state.ESTABLISHED){
+      try{
+        wait();
+      }
+      catch(Exception e){
+        e.printStackTrace();
+      }
+    }
   }
 
   
