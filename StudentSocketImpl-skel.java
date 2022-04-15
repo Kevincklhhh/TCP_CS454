@@ -45,6 +45,10 @@ class StudentSocketImpl extends BaseSocketImpl {
     this.D = D;
   }
 
+  private void wrapAndSend(){
+
+  }
+
   /**
    * Connects this socket to the specified port number on the specified host.
    *
@@ -98,6 +102,14 @@ class StudentSocketImpl extends BaseSocketImpl {
           e.printStackTrace();
         }
       case SYN_RCVD:
+        if(p.ackFlag && !p.synFlag){
+          SetState(States.ESTABLISHED);
+        }
+      case SYN_SENT:
+        if(p.ackFlag && p.synFlag){//send an ACK packet
+          SendPacket(address,localport,p.sourcePort,-2,localSeqNumber+1,true,false,false);
+          SetState(States.ESTABLISHED);
+        }
 
     }
   }
