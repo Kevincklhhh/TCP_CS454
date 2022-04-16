@@ -1,5 +1,8 @@
+import com.sun.source.tree.SwitchExpressionTree;
+
 import java.net.*;
 import java.io.*;
+import java.util.Set;
 import java.util.Timer;
 
 class StudentSocketImpl extends BaseSocketImpl {
@@ -178,6 +181,12 @@ class StudentSocketImpl extends BaseSocketImpl {
         SetState(States.CLOSED);
         break;
 
+      case CLOSE_WAIT:
+        if(p.finFlag){
+          SetState(States.LAST_ACK);
+        }
+        break;
+
       case LAST_ACK:
         if (p.ackFlag){
           SetState(States.TIME_WAIT);
@@ -255,6 +264,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, true);
       SetState(state.LAST_ACK);
     }
+
     try{
       //create a new thread that waits until connection closes
       backgroundThread newThread = new backgroundThread(this);
@@ -274,7 +284,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       return States.CLOSED;
     }
   }
-
 
 
   /** 
@@ -299,6 +308,31 @@ class StudentSocketImpl extends BaseSocketImpl {
     // this must run only once the last timer (30 second timer) has expired
     tcpTimer.cancel();
     tcpTimer = null;
+
+    //this must run only once
+    if(this.state.equals("TIME_WAIT")){
+      try {
+        SetState(state.CLOSED);
+      }
+      catch (Exception e) {
+        notifyAll();
+      }
+
+      notifyAll();
+
+
+      try {
+        D.unregisterConnection(localSourcAddr, localport, localSourcePort, this);
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    //resend the packet due to an ack not being transmitted
+    else{
+      SendPacket(localSourcAddr, localport, localSourcePort, -2, localSeqNumber + 1, false, false, false);
+    }
   }
 }
 
