@@ -15,7 +15,7 @@ public class client2 {
 
       System.out.println("got socket "+sock);
       
-      Thread.sleep(10*1000);
+      Thread.sleep(5*1000);
 
       sock.close();
     }

@@ -67,14 +67,14 @@ class TCPStart {
     // start the demultiplexer
     D.start();
 
-    if (System.getProperty(LOSSRATERESOURCE)!=null) {
-      TCPWrapper.dropRandomPackets
-	(System.currentTimeMillis(),
-	 Double.parseDouble(System.getProperty(LOSSRATERESOURCE)));
-    }
-//    TCPWrapper.dropRandomPackets
-//            (System.currentTimeMillis(),
-//                    Double.parseDouble("0.20"));
+//    if (System.getProperty(LOSSRATERESOURCE)!=null) {
+//      TCPWrapper.dropRandomPackets
+//	(System.currentTimeMillis(),
+//	 Double.parseDouble(System.getProperty(LOSSRATERESOURCE)));
+//    }
+    TCPWrapper.dropRandomPackets
+            (System.currentTimeMillis(),
+                    Double.parseDouble("0.20"));
         
   }
 }
