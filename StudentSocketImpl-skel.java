@@ -50,12 +50,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       return;
     }
     if(resend){
-      System.out.println("XXX RESENDING PACKET");
+      System.out.println("RESENDING PACKET");
     }
     count++;
 
-    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
-    TCPWrapper.send(SynAck, address);
+//    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
+//    TCPWrapper.send(SynAck, address);
 
     if(resend){
       synpack = thisPack;
