@@ -122,13 +122,13 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case ESTABLISHED:
         if(p.finFlag){
-          SetState(States.CLOSE_WAIT);
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          SetState(States.CLOSE_WAIT);
         }
         break;
 
@@ -137,25 +137,28 @@ class StudentSocketImpl extends BaseSocketImpl {
           SetState(States.FIN_WAIT_2);
         }
         else if(p.finFlag){
-          SetState(States.CLOSING);
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          SetState(States.CLOSING);
         }
         break;
 
       case FIN_WAIT_2:
         if (p.finFlag){
-          SetState(States.TIME_WAIT);
+
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          SetState(States.TIME_WAIT);
+//          createTimerTask();
+
         }
         break;
 
