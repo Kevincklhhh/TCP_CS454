@@ -200,12 +200,13 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case LAST_ACK:
         if (p.ackFlag){
-          tcpTimer.cancel();
-          tcpTimer = null;
           if (tcpTimer != null) {//
+            tcpTimer.cancel();
+            tcpTimer = null;
+          }
             SetState(States.TIME_WAIT);
             createTimerTask(30 * 1000, null);
-          }
+
         }
     }
 
