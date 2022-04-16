@@ -331,7 +331,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     //resend the packet due to an ack not being transmitted
     else{
-      SendPacket(localSourcAddr, localport, localSourcePort, 0, localSeqNumber 0, false, false, false);
+      SendPacket(localSourcAddr, localport, localSourcePort, 0, localSeqNumber, false, false, false);
     }
   }
 }
