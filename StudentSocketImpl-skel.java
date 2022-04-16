@@ -202,7 +202,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         if (p.ackFlag){
           tcpTimer.cancel();
           tcpTimer = null;
-          if (tcpTimer != null) {
+          if (tcpTimer != null) {//
             SetState(States.TIME_WAIT);
             createTimerTask(30 * 1000, null);
           }
