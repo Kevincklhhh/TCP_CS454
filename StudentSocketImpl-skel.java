@@ -97,7 +97,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     D.registerConnection(address,localport,port,this);
 //    TCPPacket packet = new TCPPacket(localport,port,1,0,false,true,false,1,null);
 //    TCPWrapper.send(packet,address);
-    SendPacket(false,lastpack1,localSourcAddr,localport,localSourcePort,1,0,false,true,false);
+    SendPacket(false,lastpack1,address,localport,localSourcePort,1,0,false,true,false);
 
     SetState(States.SYN_SENT);
     while (this.state != state.ESTABLISHED){//
