@@ -159,8 +159,10 @@ class StudentSocketImpl extends BaseSocketImpl {
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
           SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
-          tcpTimer.cancel();
-          tcpTimer = null;
+          if (tcpTimer != null) {
+            tcpTimer.cancel();
+            tcpTimer = null;
+          }
           SetState(States.TIME_WAIT);
           createTimerTask(30*1000,null);
 
@@ -175,8 +177,11 @@ class StudentSocketImpl extends BaseSocketImpl {
 //          localAckNum = p.ackNum;
 //          localSourcePort = p.sourcePort;
 //          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,false,false,false);
-          tcpTimer.cancel();
-          tcpTimer = null;
+          if (tcpTimer != null){
+            tcpTimer.cancel();
+            tcpTimer = null;
+          }
+
           SetState(States.TIME_WAIT);
           createTimerTask(30*1000,null);
         }
@@ -197,8 +202,10 @@ class StudentSocketImpl extends BaseSocketImpl {
         if (p.ackFlag){
           tcpTimer.cancel();
           tcpTimer = null;
-          SetState(States.TIME_WAIT);
-          createTimerTask(30*1000,null);
+          if (tcpTimer != null) {
+            SetState(States.TIME_WAIT);
+            createTimerTask(30 * 1000, null);
+          }
         }
     }
 
