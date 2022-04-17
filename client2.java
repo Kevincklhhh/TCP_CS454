@@ -9,15 +9,17 @@ public class client2 {
     }
 
     try{
-      TCPStart.start();
+      for(int i=0;i<100;i++) {
+        TCPStart.start();
 
-      Socket sock = new Socket(argv[0], Integer.parseInt(argv[1]));
+        Socket sock = new Socket(argv[0], Integer.parseInt(argv[1]));
 
-      System.out.println("got socket "+sock);
+        System.out.println("got socket " + sock);
 
-      Thread.sleep(10*1000);
+        Thread.sleep(10 * 1000);
 
-      sock.close();
+        sock.close();
+      }
     }
     catch(Exception e){
       System.err.println("Caught exception:");
