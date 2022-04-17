@@ -59,8 +59,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       synpack = thisPack;
     }
     else{
+      System.out.println("yrqyyds");
       synpack = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
-      System.out.println(synpack);
     }
     //send the packet
     TCPWrapper.send(synpack, address);
@@ -98,6 +98,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 //    TCPPacket packet = new TCPPacket(localport,port,1,0,false,true,false,1,null);
 //    TCPWrapper.send(packet,address);
     SendPacket(false,lastpack1,address,localport,port,1,0,false,true,false);
+    System.out.println("hahaha");
     SetState(States.SYN_SENT);
     while (this.state != state.ESTABLISHED){//
       try{
