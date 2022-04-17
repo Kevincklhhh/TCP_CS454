@@ -99,7 +99,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     SendPacket(false,lastpack1,address,localport,port,1,0,false,true,false);
     SetState(States.SYN_SENT);
-    while (this.state != state.ESTABLISHED){//
+    while (this.state != state.ESTABLISHED){//h
       try{
         wait();
       }
