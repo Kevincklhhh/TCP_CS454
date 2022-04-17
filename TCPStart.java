@@ -25,16 +25,17 @@ class TCPStart {
   static public void start() {
 
     // check command line args
-    if (System.getProperty(PORTRESOURCE)==null) {
-      System.err.println("Must set "+PORTRESOURCE+" for UDP port to use with "+
-              "-D"+PORTRESOURCE+"=<num>");
-      System.exit(1);
-    }
+//    if (System.getProperty(PORTRESOURCE)==null) {
+//      System.err.println("Must set "+PORTRESOURCE+" for UDP port to use with "+
+//              "-D"+PORTRESOURCE+"=<num>");
+//      System.exit(1);
+//    }
 
 
     // this number will initialize what port # you want your UDP
     // wrapper to run on.
-    int portForUDP = Integer.parseInt(System.getProperty(PORTRESOURCE));
+    //int portForUDP = Integer.parseInt(System.getProperty(PORTRESOURCE));
+    int portForUDP = 12345;
 
 
     // initialize TCPWrapper's port number for UDP wrapping
