@@ -60,6 +60,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     }
     else{
       synpack = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
+      System.out.println(synpack);
     }
     //send the packet
     TCPWrapper.send(synpack, address);
