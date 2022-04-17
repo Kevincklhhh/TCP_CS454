@@ -91,7 +91,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    *               connection.
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
-
+    System.out.println("hahaha");
     localport = D.getNextAvailablePort();
     localSourcAddr = address;
     D.registerConnection(address,localport,port,this);
