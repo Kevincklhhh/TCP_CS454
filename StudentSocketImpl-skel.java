@@ -141,6 +141,10 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case SYN_RCVD:
         if(p.ackFlag){
+          if (tcpTimer != null) {
+            tcpTimer.cancel();
+            tcpTimer = null;
+          }
           SetState(States.ESTABLISHED);
         }else if (p.synFlag){
           SendPacket(true, lastpack1,localSourcAddr,0,0,0,0,true,true,false);}
@@ -148,6 +152,10 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case SYN_SENT:
         if(p.ackFlag && p.synFlag){//send an ACK packet
+          if (tcpTimer != null) {
+            tcpTimer.cancel();
+            tcpTimer = null;
+          }
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
@@ -168,6 +176,8 @@ class StudentSocketImpl extends BaseSocketImpl {
           localSourcePort = p.sourcePort;
           SendPacket(false, lastpack1,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
           SetState(States.CLOSE_WAIT);
+        }else if (p.ackFlag&&p.synFlag){
+          SendPacket(false, lastpack2,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
         }
         break;
 
@@ -208,7 +218,10 @@ class StudentSocketImpl extends BaseSocketImpl {
         break;
 
       case CLOSING:
-        if (p.ackFlag){
+        if (p.finFlag) {
+          SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
+        }
+        else if (p.ackFlag){
 //          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
 //          localSeqNumberStep = localSeqNumber + 1;
 //          localSourcAddr = p.sourceAddr;
@@ -226,7 +239,9 @@ class StudentSocketImpl extends BaseSocketImpl {
         break;
 
       case TIME_WAIT:
-        SetState(States.CLOSED);
+        if (p.finFlag) {
+          SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
+        }
         break;
 
       case CLOSE_WAIT:
@@ -382,7 +397,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         e.printStackTrace();
       }
     }
-
     //resend the packet due to an ack not being transmitted
     else{
       SendPacket(true, lastpack1, localSourcAddr, localport, localSourcePort, 0, localSeqNumber, false, false, false);
