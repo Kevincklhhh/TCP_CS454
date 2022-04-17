@@ -54,12 +54,12 @@ class StudentSocketImpl extends BaseSocketImpl {
     count++;
 //    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
 //    TCPWrapper.send(SynAck, address);
-
+    System.out.println("yrqyyds1");
     if(resend){
       synpack = thisPack;
     }
     else{
-      System.out.println("yrqyyds");
+      System.out.println("yrqyyds2");
       synpack = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
     }
     //send the packet
