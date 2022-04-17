@@ -10,8 +10,7 @@ public class client2 {
 
     try{
         TCPStart.start();
-      for(int i=0;i<100;i++) {
-          Socket sock = new Socket("100.86.64.158", 12345);
+        Socket sock = new Socket(argv[0], Integer.parseInt(argv[1]));
 
           System.out.println("got socket " + sock);
 
@@ -19,7 +18,7 @@ public class client2 {
 
           sock.close();
       }
-    }
+
     catch(Exception e){
       System.err.println("Caught exception:");
       e.printStackTrace();
