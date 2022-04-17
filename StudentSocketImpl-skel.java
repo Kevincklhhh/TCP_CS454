@@ -52,6 +52,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     if(resend){
       System.out.println("RESENDING PACKET");
     }
+
     count++;
 
 //    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
@@ -142,7 +143,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         if(p.ackFlag){
           SetState(States.ESTABLISHED);
         }else if (p.synFlag){
-          SendPacket(true,lastpack1,);}
+          SendPacket(true, lastpack1,localSourcAddr,0,0,0,0,true,true,false);}
         break;
 
       case SYN_SENT:
@@ -173,6 +174,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       case FIN_WAIT_1:
         if (p.ackFlag){
           SetState(States.FIN_WAIT_2);
+          tcpTimer.cancel();
+          tcpTimer = null;
         }
         else if(p.finFlag){
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
@@ -228,9 +231,9 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case CLOSE_WAIT:
         if(p.finFlag){
-          SetState(States.LAST_ACK);
+          SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
+          //SetState(States.LAST_ACK);
         }
-
         break;
 
       case LAST_ACK:
@@ -241,10 +244,11 @@ class StudentSocketImpl extends BaseSocketImpl {
           }
             SetState(States.TIME_WAIT);
             createTimerTask(30 * 1000, null);
-
+        }
+        if(p.finFlag){
+          SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
         }
     }
-
   }
   
   /** 
