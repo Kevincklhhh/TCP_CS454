@@ -44,10 +44,10 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   private void SendPacket(Boolean resend, TCPPacket thisPack, InetAddress address, int source, int dest, int seqNum, int localAN, boolean ack, boolean syn, boolean fin){
     TCPPacket synpack;
-    if(this.state == state.CLOSED && count > 0){
-      notifyAll();
-      return;
-    }
+//    if(this.state == state.CLOSED && count > 0){
+//      notifyAll();
+//      return;
+//    }
     if(resend){
       System.out.println("RESENDING PACKET");
     }
