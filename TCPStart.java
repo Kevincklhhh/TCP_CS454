@@ -74,7 +74,7 @@ class TCPStart {
 //    }
     TCPWrapper.dropRandomPackets
             (System.currentTimeMillis(),
-                    Double.parseDouble("0.90"));
+                    Double.parseDouble("0.20"));
         
   }
 }
