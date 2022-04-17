@@ -1,19 +1,13 @@
 
 import java.net.*;
 import java.io.*;
-import java.util.Set;
 import java.util.Timer;
 
 class StudentSocketImpl extends BaseSocketImpl {
 
-//   SocketImpl data members:
-     protected InetAddress address;
-//     protected int port;
-//     protected int localport;
-  private int localAckNum; // Local copy of ackNum
-  private int localSeqNumber;  // Local copy of SeqNum
-  private int localSourcePort; // Local copy of SourcePort
-  private int localSeqNumberStep;
+  private int localAckNum;
+  private int localSeqNumber;
+  private int localSourcePort;
   private InetAddress localSourcAddr;
   private Demultiplexer D;
   private Timer tcpTimer;
@@ -52,17 +46,16 @@ class StudentSocketImpl extends BaseSocketImpl {
       System.out.println("RESENDING PACKET");
     }
     count++;
-//    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
-//    TCPWrapper.send(SynAck, address);
+
     if(resend){
       synpack = thisPack;
     }
     else{
       synpack = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
     }
-    //send the packet
+
     TCPWrapper.send(synpack, address);
-    //send the packet and start a retransmission timer
+
     if (!synpack.ackFlag || synpack.synFlag){
       lastpack1 = synpack;
       createTimerTask(1000, null);
@@ -73,7 +66,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
   }
 
-  StudentSocketImpl(Demultiplexer D) {  // default constructor
+  StudentSocketImpl(Demultiplexer D) {
     this.state = state.CLOSED;
     this.D = D;
 
@@ -89,17 +82,15 @@ class StudentSocketImpl extends BaseSocketImpl {
    *               connection.
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
-    System.out.println("hahaha");
     count --;
     localport = D.getNextAvailablePort();
     localSourcAddr = address;
-    D.registerConnection(address,localport,port,this);
-//    TCPPacket packet = new TCPPacket(localport,port,1,0,false,true,false,1,null);
-//    TCPWrapper.send(packet,address);
+    D.registerConnection(address, localport, port,this);
 
-    SendPacket(false,lastpack1,address,localport,port,1,0,false,true,false);
+    SendPacket(false, lastpack1, address, localport, localSourcePort,1,0,false,true,false);
+
     SetState(States.SYN_SENT);
-    while (this.state != state.ESTABLISHED){//
+    while (this.state != state.ESTABLISHED){
       try{
         wait();
       }
@@ -122,10 +113,8 @@ class StudentSocketImpl extends BaseSocketImpl {
       case CLOSED:
 
       case LISTEN:
-        System.out.print("haha");
         if(!p.ackFlag && p.synFlag){
-          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
-          localSeqNumberStep = localSeqNumber + 1;
+          localSeqNumber = p.seqNum;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -152,17 +141,12 @@ class StudentSocketImpl extends BaseSocketImpl {
         break;
 
       case SYN_SENT:
-        if(p.ackFlag && p.synFlag){//send an ACK packet
+        if(p.ackFlag && p.synFlag){
           if (tcpTimer != null) {
             tcpTimer.cancel();
             tcpTimer = null;
           }
-          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
-          localSeqNumberStep = localSeqNumber + 1;
-          localSourcAddr = p.sourceAddr;
-          localAckNum = p.ackNum;
-          localSourcePort = p.sourcePort;
-          SendPacket(false, lastpack1, localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          updateSeq(p);
           SetState(States.ESTABLISHED);
         }
 
@@ -170,12 +154,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case ESTABLISHED:
         if(p.finFlag){
-          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
-          localSeqNumberStep = localSeqNumber + 1;
-          localSourcAddr = p.sourceAddr;
-          localAckNum = p.ackNum;
-          localSourcePort = p.sourcePort;
-          SendPacket(false, lastpack1,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          updateSeq(p);
           SetState(States.CLOSE_WAIT);
         }else if (p.ackFlag&&p.synFlag){
           SendPacket(false, lastpack2,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
@@ -189,12 +168,7 @@ class StudentSocketImpl extends BaseSocketImpl {
           tcpTimer = null;
         }
         else if(p.finFlag){
-          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
-          localSeqNumberStep = localSeqNumber + 1;
-          localSourcAddr = p.sourceAddr;
-          localAckNum = p.ackNum;
-          localSourcePort = p.sourcePort;
-          SendPacket(false, lastpack1,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          updateSeq(p);
           SetState(States.CLOSING);
         }
         break;
@@ -202,12 +176,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       case FIN_WAIT_2:
         if (p.finFlag){
 
-          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
-          localSeqNumberStep = localSeqNumber + 1;
-          localSourcAddr = p.sourceAddr;
-          localAckNum = p.ackNum;
-          localSourcePort = p.sourcePort;
-          SendPacket(false, lastpack1,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+          updateSeq(p);
           if (tcpTimer != null) {
             tcpTimer.cancel();
             tcpTimer = null;
@@ -223,12 +192,6 @@ class StudentSocketImpl extends BaseSocketImpl {
           SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
         }
         else if (p.ackFlag){
-//          localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
-//          localSeqNumberStep = localSeqNumber + 1;
-//          localSourcAddr = p.sourceAddr;
-//          localAckNum = p.ackNum;
-//          localSourcePort = p.sourcePort;
-//          SendPacket(localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,false,false,false);
           if (tcpTimer != null){
             tcpTimer.cancel();
             tcpTimer = null;
@@ -245,7 +208,6 @@ class StudentSocketImpl extends BaseSocketImpl {
             SendPacket(true, lastpack2, localSourcAddr, 0, 0, 0, 0, false, false, false);
           }
         }catch (Exception e) {
-          // This is a really bad catch. This should literally never happen
           e.printStackTrace();
         }
         break;
@@ -253,13 +215,12 @@ class StudentSocketImpl extends BaseSocketImpl {
       case CLOSE_WAIT:
         if(p.finFlag){
           SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
-          //SetState(States.LAST_ACK);
         }
         break;
 
       case LAST_ACK:
         if (p.ackFlag){
-          if (tcpTimer != null) {//
+          if (tcpTimer != null) {
             tcpTimer.cancel();
             tcpTimer = null;
           }
@@ -271,7 +232,15 @@ class StudentSocketImpl extends BaseSocketImpl {
         }
     }
   }
-  
+
+  private void updateSeq(TCPPacket p) {
+    localSeqNumber = p.seqNum;
+    localSourcAddr = p.sourceAddr;
+    localAckNum = p.ackNum;
+    localSourcePort = p.sourcePort;
+    SendPacket(false, lastpack1,localSourcAddr, localport, localSourcePort,-2,localSeqNumber+1,true,false,false);
+  }
+
   /** 
    * Waits for an incoming connection to arrive to connect this socket to
    * Ultimately this is called by the application calling 
@@ -331,7 +300,6 @@ class StudentSocketImpl extends BaseSocketImpl {
    * @exception  IOException  if an I/O error occurs when closing this socket.
    */
   public synchronized void close() throws IOException {
-    System.out.println("closing");
     if (this.state == null){
     }
     else if (this.state == state.ESTABLISHED) {
@@ -343,7 +311,6 @@ class StudentSocketImpl extends BaseSocketImpl {
     }
 
     try{
-      //create a new thread that waits until connection closes
       backgroundThread newThread = new backgroundThread(this);
       newThread.run();
     }
@@ -382,7 +349,6 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void handleTimer(Object ref){
 
-    // this must run only once the last timer (30 second timer) has expired
     tcpTimer.cancel();
     tcpTimer = null;
 
@@ -403,7 +369,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         e.printStackTrace();
       }
     }
-    //resend the packet due to an ack not being transmitted
     else{
       SendPacket(true, lastpack1, localSourcAddr, localport, localSourcePort, 0, localSeqNumber, false, false, false);
     }
