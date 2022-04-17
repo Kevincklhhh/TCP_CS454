@@ -90,16 +90,15 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
     System.out.println("hahaha");
-    count --;
     localport = D.getNextAvailablePort();
     localSourcAddr = address;
     D.registerConnection(address,localport,port,this);
 //    TCPPacket packet = new TCPPacket(localport,port,1,0,false,true,false,1,null);
 //    TCPWrapper.send(packet,address);
-
+    count --;
     SendPacket(false,lastpack1,address,localport,port,1,0,false,true,false);
     SetState(States.SYN_SENT);
-    while (this.state != state.ESTABLISHED){//h
+    while (this.state != state.ESTABLISHED){//
       try{
         wait();
       }
@@ -113,7 +112,7 @@ class StudentSocketImpl extends BaseSocketImpl {
    * Called by Demultiplexer when a packet comes in for this connection
    * @param p The packet that arrived
    */
-  public synchronized void receivePacket(TCPPacket p){
+  public synchronized void receivePacket(TCPPacket p){//
     String output = p.toString();
     System.out.println(output);
     this.notifyAll();
