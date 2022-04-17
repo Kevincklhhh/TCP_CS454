@@ -387,7 +387,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     tcpTimer = null;
 
     //this must run only once
-    if(this.state.equals("TIME_WAIT")){
+    if(this.state == state.TIME_WAIT){
       try {
         SetState(state.CLOSED);
       }
