@@ -239,8 +239,13 @@ class StudentSocketImpl extends BaseSocketImpl {
         break;
 
       case TIME_WAIT:
-        if (p.finFlag) {
-          SendPacket(true, lastpack2, localSourcAddr,0,0,0,0,false,false,false);
+        try {
+          if (p.finFlag) {
+            SendPacket(true, lastpack2, localSourcAddr, 0, 0, 0, 0, false, false, false);
+          }
+        }catch (Exception e) {
+          // This is a really bad catch. This should literally never happen
+          e.printStackTrace();
         }
         break;
 
