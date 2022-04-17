@@ -1,4 +1,3 @@
-import com.sun.source.tree.SwitchExpressionTree;
 
 import java.net.*;
 import java.io.*;
@@ -52,9 +51,7 @@ class StudentSocketImpl extends BaseSocketImpl {
     if(resend){
       System.out.println("RESENDING PACKET");
     }
-
     count++;
-
 //    TCPPacket SynAck = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
 //    TCPWrapper.send(SynAck, address);
 
@@ -64,10 +61,8 @@ class StudentSocketImpl extends BaseSocketImpl {
     else{
       synpack = new TCPPacket(source, dest, seqNum+1, localAN, ack, syn, fin, 1, null);
     }
-
     //send the packet
     TCPWrapper.send(synpack, address);
-
     //send the packet and start a retransmission timer
     if (!synpack.ackFlag || synpack.synFlag){
       lastpack1 = synpack;
