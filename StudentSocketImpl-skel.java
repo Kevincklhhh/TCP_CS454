@@ -6,12 +6,10 @@ import java.util.Timer;
 
 class StudentSocketImpl extends BaseSocketImpl {
 
-//     protected InetAddress address;
 
   private int localAckNum;
   private int localSeqNumber;
   private int localSourcePort;
-//  private int localSeqNumberStep;
   private InetAddress localSourcAddr;
   private Demultiplexer D;
   private Timer tcpTimer;
@@ -117,7 +115,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         System.out.print("haha");
         if(!p.ackFlag && p.synFlag){
           localSeqNumber = p.seqNum;
-//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -150,7 +147,6 @@ class StudentSocketImpl extends BaseSocketImpl {
             tcpTimer = null;
           }
           localSeqNumber = p.seqNum;
-//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -163,7 +159,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       case ESTABLISHED:
         if(p.finFlag){
           localSeqNumber = p.seqNum;
-//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -182,7 +177,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         }
         else if(p.finFlag){
           localSeqNumber = p.seqNum;
-//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -195,7 +189,6 @@ class StudentSocketImpl extends BaseSocketImpl {
         if (p.finFlag){
 
           localSeqNumber = p.seqNum;
-//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -243,7 +236,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
       case LAST_ACK:
         if (p.ackFlag){
-          if (tcpTimer != null) {//
+          if (tcpTimer != null) {
             tcpTimer.cancel();
             tcpTimer = null;
           }
