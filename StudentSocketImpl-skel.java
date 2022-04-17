@@ -74,7 +74,7 @@ class StudentSocketImpl extends BaseSocketImpl {
   }
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
-    //this.state = state.CLOSED;
+    this.state = state.CLOSED;
     this.D = D;
 
   }
