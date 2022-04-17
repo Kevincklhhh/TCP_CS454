@@ -75,7 +75,9 @@ class StudentSocketImpl extends BaseSocketImpl {
   }
 
   StudentSocketImpl(Demultiplexer D) {  // default constructor
+    this.state = state.CLOSED;
     this.D = D;
+
   }
 
 
@@ -116,6 +118,8 @@ class StudentSocketImpl extends BaseSocketImpl {
     this.notifyAll();
 
     switch (state){
+      case CLOSED:
+
       case LISTEN:
         System.out.print("haha");
         if(!p.ackFlag && p.synFlag){
@@ -275,8 +279,8 @@ class StudentSocketImpl extends BaseSocketImpl {
    * Note that localport is already set prior to this being called.
    */
   public synchronized void acceptConnection() throws IOException {
-    SetState(States.LISTEN);
     D.registerListeningSocket(localport,this);
+    SetState(States.LISTEN);
     while (this.state != state.ESTABLISHED){
       try{
         wait();
