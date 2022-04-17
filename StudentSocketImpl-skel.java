@@ -371,8 +371,6 @@ class StudentSocketImpl extends BaseSocketImpl {
       }
 
       notifyAll();
-
-
       try {
         D.unregisterConnection(localSourcAddr, localport, localSourcePort, this);
       }
@@ -383,7 +381,7 @@ class StudentSocketImpl extends BaseSocketImpl {
 
     //resend the packet due to an ack not being transmitted
     else{
-      SendPacket(false, lastpack1,localSourcAddr, localport, localSourcePort, 0, localSeqNumber, false, false, false);
+      SendPacket(true, lastpack1, localSourcAddr, localport, localSourcePort, 0, localSeqNumber, false, false, false);
     }
   }
 }
