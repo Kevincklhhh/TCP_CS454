@@ -72,9 +72,9 @@ class TCPStart {
 //	(System.currentTimeMillis(),
 //	 Double.parseDouble(System.getProperty(LOSSRATERESOURCE)));
 //    }
-//    TCPWrapper.dropRandomPackets
-//            (System.currentTimeMillis(),
-//                    Double.parseDouble("0.90"));
+    TCPWrapper.dropRandomPackets
+            (System.currentTimeMillis(),
+                    Double.parseDouble("0.90"));
         
   }
 }

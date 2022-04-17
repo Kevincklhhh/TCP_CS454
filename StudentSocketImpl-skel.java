@@ -139,13 +139,13 @@ class StudentSocketImpl extends BaseSocketImpl {
         break;
 
       case SYN_RCVD:
-        if(p.ackFlag && !p.synFlag){
+        if(p.ackFlag){
           SetState(States.ESTABLISHED);
-        }
+        }else if (p.synFlag){
+          SendPacket(true,lastpack1,);}
         break;
 
       case SYN_SENT:
-
         if(p.ackFlag && p.synFlag){//send an ACK packet
           localSeqNumber = p.seqNum; // Value from a wrapped TCP packet
           localSeqNumberStep = localSeqNumber + 1;
