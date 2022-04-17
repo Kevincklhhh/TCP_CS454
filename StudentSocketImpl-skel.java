@@ -6,12 +6,12 @@ import java.util.Timer;
 
 class StudentSocketImpl extends BaseSocketImpl {
 
-     protected InetAddress address;
+//     protected InetAddress address;
 
   private int localAckNum;
   private int localSeqNumber;
   private int localSourcePort;
-  private int localSeqNumberStep;
+//  private int localSeqNumberStep;
   private InetAddress localSourcAddr;
   private Demultiplexer D;
   private Timer tcpTimer;
@@ -85,7 +85,6 @@ class StudentSocketImpl extends BaseSocketImpl {
    *               connection.
    */
   public synchronized void connect(InetAddress address, int port) throws IOException{
-    System.out.println("hahaha");
     localport = D.getNextAvailablePort();
     localSourcAddr = address;
     D.registerConnection(address,localport,port,this);
@@ -118,7 +117,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         System.out.print("haha");
         if(!p.ackFlag && p.synFlag){
           localSeqNumber = p.seqNum;
-          localSeqNumberStep = localSeqNumber + 1;
+//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -151,7 +150,7 @@ class StudentSocketImpl extends BaseSocketImpl {
             tcpTimer = null;
           }
           localSeqNumber = p.seqNum;
-          localSeqNumberStep = localSeqNumber + 1;
+//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -164,7 +163,7 @@ class StudentSocketImpl extends BaseSocketImpl {
       case ESTABLISHED:
         if(p.finFlag){
           localSeqNumber = p.seqNum;
-          localSeqNumberStep = localSeqNumber + 1;
+//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -183,7 +182,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         }
         else if(p.finFlag){
           localSeqNumber = p.seqNum;
-          localSeqNumberStep = localSeqNumber + 1;
+//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -196,7 +195,7 @@ class StudentSocketImpl extends BaseSocketImpl {
         if (p.finFlag){
 
           localSeqNumber = p.seqNum;
-          localSeqNumberStep = localSeqNumber + 1;
+//          localSeqNumberStep = localSeqNumber + 1;
           localSourcAddr = p.sourceAddr;
           localAckNum = p.ackNum;
           localSourcePort = p.sourcePort;
@@ -365,7 +364,6 @@ class StudentSocketImpl extends BaseSocketImpl {
    */
   public synchronized void handleTimer(Object ref){
 
-    // this must run only once the last timer (30 second timer) has expired
     tcpTimer.cancel();
     tcpTimer = null;
 
